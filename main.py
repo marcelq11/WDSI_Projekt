@@ -6,7 +6,7 @@ from sklearn.metrics import confusion_matrix
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-def load_from_xml(path,temp):
+def load_from_xml(path):
     data = []
     for i in os.listdir(path+'annotations/'):
         tree = ET.parse(path+'annotations/'+i)
@@ -27,6 +27,12 @@ def load_from_xml(path,temp):
             else:
                 data.append({'image': image_cropped, 'label': 'other'})
     return data
+
+def load_png(path):
+    data = []
+    for i in os.listdir(path + 'images/'):
+        image = cv2.imread(path + 'images/' + i)
+        data.append({'image': image, 'label': ''})
 
 def load_from_input(path):
     data = []
@@ -103,19 +109,17 @@ def main():
     absolute_path=main_path.parent
     temp = input()
     if temp == 'detect':
-        train_data = load_from_xml(str(absolute_path) + '/train/',temp)
-        test_data = load_from_xml(str(absolute_path) + '/test/',temp)
+        train_data = load_from_xml(str(absolute_path) + '/train/')
+        # test_data_check = load_from_xml(str(absolute_path) + '/test/')
+        test_data = load_png(str(absolute_path) + '/test/')
         vocabulary = learn(train_data)
         train_data = extract(train_data,vocabulary)
         rf = train(train_data)
-        test_data = extract(test_data,vocabulary)
-        cv2.imshow('image',test_data[2]['image'])
-        cv2.waitKey()
-        test_data = predict(rf, test_data)
-        evaluate(test_data)
+
+
     elif temp == 'classify':
         input_data = load_from_input(str(absolute_path) + '/test/')
-        train_data = load_from_xml(str(absolute_path) + '/train/',temp)
+        train_data = load_from_xml(str(absolute_path) + '/train/')
         vocabulary = learn(train_data)
         train_data = extract(train_data, vocabulary)
         rf = train(train_data)
