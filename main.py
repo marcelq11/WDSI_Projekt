@@ -11,11 +11,7 @@ def load_from_xml(path,temp):
     for i in os.listdir(path+'annotations/'):
         tree = ET.parse(path+'annotations/'+i)
         filename = tree.find('filename')
-        if temp == 'detect':
-            print(filename.text)
         objects = tree.findall('object')
-        if temp == 'detect':
-            print(len(objects))
         size = tree.find('size')
         height = size.find('height')
         width = size.find('width')
@@ -24,8 +20,6 @@ def load_from_xml(path,temp):
             y_min = i.find('bndbox/ymin')
             x_max = i.find('bndbox/xmax')
             y_max = i.find('bndbox/ymax')
-            if temp == 'detect':
-                print(x_min.text,y_min.text,x_max.text,y_max.text)
             image = cv2.imread(path+'images/'+filename.text)
             image_cropped = image[int(y_min.text):int(y_max.text), int(x_min.text):int(x_max.text)]
             if str(i.find('name').text) == 'speedlimit' and (int(y_max.text)-int(y_min.text))*10 > int(height.text) and (int(x_max.text)-int(x_min.text))*10 > int(width.text):
@@ -51,13 +45,11 @@ def load_from_input(path):
 def learn(data):
     size = 128
     bow = cv2.BOWKMeansTrainer(size)
-
     sift = cv2.SIFT_create()
     for i in data:
-        key_points = sift.detect(i['image'], None)
-        key_points, desc = sift.compute(i['image'], key_points)
-        if desc is not None:
-            bow.add(desc)
+        key_points, des = sift.detectAndCompute(i['image'], None)
+        if des is not None:
+            bow.add(des)
     vocabulary = bow.cluster()
     return vocabulary
 
@@ -69,21 +61,21 @@ def extract(data,vocabulary):
 
     for i in data:
         key_points = sift.detect(i['image'], None)
-        img_Des = bow.compute(i['image'], key_points)
-        if img_Des is not None:
-            i.update({'desc': img_Des})
+        img_des = bow.compute(i['image'], key_points)
+        if img_des is not None:
+            i.update({'desc': img_des})
         else:
             i.update({'desc': np.zeros((1, 128))})
     return data
 
 def train(data):
     clf = RandomForestClassifier(128)
-    x_matrix = np.empty((1, 128))
-    y_vector = []
+    x = np.empty((1, 128))
+    y = []
     for i in data:
-        y_vector.append(i['label'])
-        x_matrix = np.vstack((x_matrix, i['desc']))
-    clf.fit(x_matrix[1:], y_vector)
+        y.append(i['label'])
+        x = np.vstack((x, i['desc']))
+    clf.fit(x[1:], y)
     return clf
 
 def predict(rf, data):
@@ -92,12 +84,12 @@ def predict(rf, data):
     return data
 
 def evaluate(data):
-    y_pred = []
-    y_real = []
+    y_p = []
+    y_r = []
     for i in data:
-        y_pred.append(i['label_pred'])
-        y_real.append(i['label'])
-    confusion = confusion_matrix(y_real, y_pred)
+        y_p.append(i['label_pred'])
+        y_r.append(i['label'])
+    confusion = confusion_matrix(y_r, y_p)
     print(confusion)
     _TPa, _Eba, _Eab, _TPb = confusion.ravel()
     accuracy = 100 * (_TPa + _TPb ) / (_TPa + _Eba + _Eab + _TPb)
@@ -117,6 +109,8 @@ def main():
         train_data = extract(train_data,vocabulary)
         rf = train(train_data)
         test_data = extract(test_data,vocabulary)
+        cv2.imshow('image',test_data[2]['image'])
+        cv2.waitKey()
         test_data = predict(rf, test_data)
         evaluate(test_data)
     elif temp == 'classify':
