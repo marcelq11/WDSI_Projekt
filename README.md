@@ -1,5 +1,5 @@
 # WDSI_Projekt
-Marcel Chudecki 144480
+Marcel Chudecki 144480 \\
 Projekt zaliczeniowy przedmiotu wprowadzenie do sztucznej inteligencji "detekcja znaków ograniczenia prędkości.
 Projekt niestety posiada tylko część klasyfikacji znaków.
 Podczas klasyfikacji znaków program wykonuje następujące czynności:
