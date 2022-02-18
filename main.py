@@ -105,6 +105,7 @@ def main():
         rf = train(train_data)
         test_data = extract(test_data, vocabulary)
 
+
     elif temp == 'classify':
         input_data = load_from_input(str(absolute_path) + '/test/')
         train_data = load_from_xml(str(absolute_path) + '/train/')
