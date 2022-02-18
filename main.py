@@ -33,6 +33,7 @@ def load_png(path):
     for i in os.listdir(path + 'images/'):
         image = cv2.imread(path + 'images/' + i)
         data.append({'image': image, 'label': ''})
+    return data
 
 def load_from_input(path):
     data = []
@@ -89,19 +90,6 @@ def predict(rf, data):
         i.update({'label_pred': rf.predict(i['desc'])[0]})
     return data
 
-def evaluate(data):
-    y_p = []
-    y_r = []
-    for i in data:
-        y_p.append(i['label_pred'])
-        y_r.append(i['label'])
-    confusion = confusion_matrix(y_r, y_p)
-    print(confusion)
-    _TPa, _Eba, _Eab, _TPb = confusion.ravel()
-    accuracy = 100 * (_TPa + _TPb ) / (_TPa + _Eba + _Eab + _TPb)
-    print("accuracy =", round(accuracy, 2), "%")
-    return
-
 def main():
 
     main = Path('main.py')
@@ -115,7 +103,7 @@ def main():
         vocabulary = learn(train_data)
         train_data = extract(train_data,vocabulary)
         rf = train(train_data)
-
+        test_data = extract(test_data, vocabulary)
 
     elif temp == 'classify':
         input_data = load_from_input(str(absolute_path) + '/test/')
