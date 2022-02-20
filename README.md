@@ -17,4 +17,4 @@ Podczas klasyfikacji znaków program wykonuje następujące czynności:
 -po wyuczeniu pragram przystępuje do ekstrakcji danych wejsciowych po czym wypisuję je na wyjściu
 
 Odnośnie części do detekcji napisałem tylko i wyłącznie funkcję do ładowania zdjęć. W funkcji main jest if, który umożliwia wybór 'classify' oraz 'detect', ale działa tylko 'classify'.
-Wstępnie projekt na obecnym etapie uważam za skończony. Jeżeli są jakieś niejasności bądź uwagi proszę o 
+Wstępnie projekt na obecnym etapie uważam za skończony. Jeżeli są jakieś niejasności bądź uwagi proszę o informację zwotna.
