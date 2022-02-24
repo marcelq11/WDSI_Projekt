@@ -6,6 +6,24 @@ from sklearn.metrics import confusion_matrix
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+# TODO Jakość kodu i raport (4/4)
+# TODO Raport troche skapy.
+
+# TODO Skuteczność klasyfikacji 0.712 (2.5/4)
+# TODO [0.00, 0.50) - 0.0
+# TODO [0.50, 0.55) - 0.5
+# TODO [0.55, 0.60) - 1.0
+# TODO [0.60, 0.65) - 1.5
+# TODO [0.65, 0.70) - 2.0
+# TODO [0.70, 0.75) - 2.5
+# TODO [0.75, 0.80) - 3.0
+# TODO [0.80, 0.85) - 3.5
+# TODO [0.85, 1.00) - 4.0
+
+
+# TODO Skuteczność detekcji (/2)
+
+
 def load_from_xml(path):
     data = []
     for i in os.listdir(path+'annotations/'):
@@ -45,6 +63,7 @@ def load_from_input(path):
             temp = input()
             cord = temp.split()
             image = cv2.imread(path + 'images/' + filename)
+            # TODO Format to "xmin xmax ymin ymax".
             image_cropped = image[int(cord[1]):int(cord[3]), int(cord[0]):int(cord[2])]
             data.append({'image': image_cropped, 'label': ''})
     return data
@@ -72,11 +91,13 @@ def extract(data,vocabulary):
         if img_des is not None:
             i.update({'desc': img_des})
         else:
+            # TODO Lepiej w ogole pominac takie przypadki.
             i.update({'desc': np.zeros((1, 128))})
     return data
 
 def train(data):
     clf = RandomForestClassifier(128)
+    # TODO Mozna tez zrobic "np.empty((0, 128))".
     x = np.empty((1, 128))
     y = []
     for i in data:
